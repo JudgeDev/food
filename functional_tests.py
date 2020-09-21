@@ -46,6 +46,11 @@ class NewVisitorTest(unittest.TestCase):
         """Runs after each test"""
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         """Test method run by test runner"""
         # Z has just got home from work and needs to cook something fast before his
@@ -81,11 +86,7 @@ class NewVisitorTest(unittest.TestCase):
         # This is a simple "explicit wait"
         # @TODO improve explicit wait for browser to load
         time.sleep(1)
-
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Mince',
-                      [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Mince')
 
         # There is still a text box inviting him to add another ingredient.
         # He enters "Onions" (Z doesn't like food to go off)
@@ -95,10 +96,8 @@ class NewVisitorTest(unittest.TestCase):
         time.sleep(1)
 
         # The page updates again, and now shows both items on the list
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Mince', [row.text for row in rows])
-        self.assertIn('2: Onions', [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Mince')
+        self.check_for_row_in_list_table('1: Onions')
 
         # Z wonders whether the site will remember the list.
         # Then he sees that the site has generated a unique URL
