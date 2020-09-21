@@ -6,6 +6,13 @@ In the terminal, run the unit tests and see how they fail.
 In the editor, make a minimal code change to address the current test failure.
 
 Repeat!
+
+Refactoring:
+Improve the code without changing its functionality
+When refactoring, work on either the code or the tests,
+but not both at once.
+Test before refactoring.
+Commit after refactoring.
 """
 
 from django.urls import resolve

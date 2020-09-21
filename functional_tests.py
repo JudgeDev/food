@@ -85,7 +85,8 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
-            any(row.text == '1: Mince' for row in rows)
+            any(row.text == '1: Mince' for row in rows),
+            "New ingredient did not appear in table"
         )
 
         # There is still a text box inviting him to add another ingredient.
