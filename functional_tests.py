@@ -1,8 +1,40 @@
+"""
+The TDD approach wants our application to be covered by both types of test.
+Our workflow will look a bit like this:
+
+Start by writing a functional test, describing the new functionality from
+the user’s point of view.
+
+Once we have a functional test that fails, we start to think about how to
+write code that can get it to pass (or at least to get past its current failure).
+We now use one or more unit tests to define how we want our code to behave
+— ​the idea is that each line of production code we write should be tested by
+(at least) one of our unit tests.
+
+Once we have a failing unit test, we write the smallest amount of
+application code we can, just enough to get the unit test to pass.
+We may iterate between steps 2 and 3 a few times, until we think the
+functional test will get a little further.
+
+Now we can rerun our functional tests and see if they pass,
+or get a little further. That may prompt us to write some new unit tests,
+and some new code, and so on.
+
+All the way through, the functional tests are driving what development
+we do from a high level, while the unit tests drive what we do at a low level.
+
+Notes on functional testing:
+Use a Functional Test to Scope Out a Minimum Viable App
+== Acceptance Test == End-to-End Test
+Don’t test constants, and testing HTML as text is a lot like testing a constant
+"""
+
 import time
 import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+
 
 class NewVisitorTest(unittest.TestCase):
 
@@ -61,12 +93,6 @@ class NewVisitorTest(unittest.TestCase):
         self.fail('Finish the test!')
 
         # The page updates again, and now shows both items on his list
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
