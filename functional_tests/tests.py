@@ -1,4 +1,12 @@
-"""
+"""Functional tests
+Run with: python manage.py test functional_tests
+
+FTs could be in tests for the apps. Better to keep them separate,
+because functional tests usually have cross-cutting concerns that
+run across different apps. FTs are meant to see things from the point of view
+of your users, and your users don’t care about how you’ve split work between
+different apps.
+
 The TDD approach wants our application to be covered by both types of test.
 Our workflow will look a bit like this:
 
@@ -27,6 +35,7 @@ Notes on functional testing:
 Use a Functional Test to Scope Out a Minimum Viable App
 == Acceptance Test == End-to-End Test
 Don’t test constants, and testing HTML as text is a lot like testing a constant
+TODO: clean up after FT runs
 """
 
 import time
@@ -35,8 +44,13 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+from django.test import LiveServerTestCase
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
+    """LiveServerTestCase will automatically create a test database
+    (just like in a unit test run), and start up a development server for
+    the functional tests to run against.
+    """
 
     def setUp(self) -> None:
         """Runs before each test"""
@@ -57,7 +71,8 @@ class NewVisitorTest(unittest.TestCase):
         # wife gets back from an all day shopping trip at PEP.
         # He desperately searches the internet and sees an interesting site called
         # "askfridge.com"
-        self.browser.get('http://localhost:8000')
+        # get url from LiveServerTestCase
+        self.browser.get(self.live_server_url)
 
         # He notices the page title and header mention a fridge
         self.assertIn('Fridge', self.browser.title)
@@ -105,8 +120,3 @@ class NewVisitorTest(unittest.TestCase):
         self.fail('Finish the test!')
 
         # He visits that URL - his to-do list is still there.
-
-
-if __name__ == '__main__':
-    if __name__ == '__main__':
-        unittest.main(warnings='ignore')

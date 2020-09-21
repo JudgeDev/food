@@ -1,4 +1,5 @@
-"""
+"""Unit tests for fridge app
+
 The Unit-Test/Code Cycle:
 
 In the terminal, run the unit tests and see how they fail.
