@@ -12,60 +12,55 @@ The unit-test/code cycle: Red, Green, Refactor:
 
 Start by writing a unit test which fails (Red).
 
-Write the simplest possible code to get it
-to pass (Green), even if that means cheating.
+Write the simplest possible code to get it to pass (Green),
+even if that means cheating.
 
 Refactor to get to better code that makes more sense.
 
-What justifies moving from an implementation where
-we "cheat" to one we’re happy with?
+What justifies moving from an implementation where we "cheat" to one we’re happy with?
 
 One methodology is eliminate duplication:
 
-if your test uses a magic constant (like the "1:"
-in front of our list item), and your application code
-also uses it, that counts as duplication,
+if your test uses a magic constant (like the "1:" in front of our list item),
+and your application code also uses it, that counts as duplication,
 so it justifies refactoring.
-Removing the magic constant from the application code
-usually means you have to stop cheating.
+Removing the magic constant from the application code usually means
+you have to stop cheating.
 
-If that leaves things a little too vague, use
-a second technique, which is called triangulation:
-if your tests let you get away with writing "cheating"
-code that you’re not happy with, like returning
-a magic constant, write another test that forces you
-to write some better code.
-That’s what we’re doing when we extend the FT
-to check that we get a "2:" when inputting
-a second list item.
+If that leaves things a little too vague, use a second technique,
+which is called triangulation:
+If your tests let you get away with writing "cheating" code that you’re
+not happy with, like returning a magic constant, write another test that
+forces you to write some better code.
+That’s what we’re doing when we extend the FT to check that we get a "2:"
+when inputting a second list item.
 
 Refactoring:
-Improve the code without changing its functionality
-When refactoring, work on either the code or the tests,
-but not both at once.
+Improve the code without changing its functionality When refactoring,
+work on either the code or the tests, but not both at once.
 Test before refactoring.
 Commit after refactoring.
 
 Three Strikes and Refactor
 - applies Don’t Repeat Yourself (DRY):
 
-Code smell in FT: Three almost identical code blocks
-doing the same thing.
-You can copy and paste code once,
-and it may be premature to try to remove the duplication
-it causes, but once you get three occurrences,
+Code smell in FT:
+Three almost identical code blocks doing the same thing.
+You can copy and paste code once, and it may be premature to try
+to remove the duplication it causes, but once you get three occurrences,
 it’s time to remove duplication.
 
+A long unit test either needs to be broken into two, or it may be
+an indication that the thing you’re testing is too complicated.
+
 Integrated tests
-Technically a test that relies on an external system,
-e.g. a database, is called an integrated test.
+Technically a test that relies on an external system, e.g. a database,
+is called an integrated test.
 """
 
-from django.urls import resolve
 from django.test import TestCase
 # from django.http import HttpRequest
 
-from fridge.views import home_page
 from fridge.models import Item
 
 
@@ -79,9 +74,9 @@ class HomePageTest(TestCase):
     """
 
     def test_uses_home_template(self):
-        # Instead of manually creating an HttpRequest object
-        # and calling the view function directly,
-        # call self.client.get, passing it the URL to test.
+        # Instead of manually creating an HttpRequest object and calling
+        # the view function directly, call self.client.get,
+        # passing it the URL to test.
         response = self.client.get('/')
         """ Old method using HttpRequest
         # HttpRequest object is what Django sees when a user’s browser asks
@@ -98,16 +93,42 @@ class HomePageTest(TestCase):
 
     def test_can_save_a_POST_request(self):
         """To do a POST, call self.client.post.
-        It takes a data argument which contains
-        the form data we want to send. Then check that
-        the text from our POST request ends up in
+        It takes a data argument which contains the form data we want to send.
+        Then check that the text from our POST request ends up in
         the rendered HTML.
         """
         response = self.client.post('/',
                                     data={'item_text': 'A new list item'})
-        self.assertIn('A new list item',
-                      response.content.decode())
-        self.assertTemplateUsed(response, 'home.html')
+        # = objects.all().count()
+        self.assertEqual(Item.objects.count(), 1)
+        # = objects.all()[]
+        new_item = Item.objects.first()
+        # check item's text is correct
+        self.assertEqual(new_item.text, 'A new list item')
+
+    def test_redirects_after_post(self):
+        response = self.client.post('/',
+                                    data={'item_text': 'A new list item'})
+        # check for redirect after POST
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_only_saves_items_when_necessary(self):
+        self.client.get('/')
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_displays_all_list_items(self):
+        # setup test
+        Item.objects.create(text='itemey 1')
+        Item.objects.create(text='itemey 2')
+
+        # exercise code under test
+        response = self.client.get('/')
+
+        # assert results
+        self.assertIn('itemey 1', response.content.decode())
+        self.assertIn('itemey 2', response.content.decode())
+
 
 class ItemModelTest(TestCase):
     """Testing with Object-Relational Mapper (ORM)

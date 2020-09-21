@@ -97,7 +97,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # The page updates again, and now shows both items on the list
         self.check_for_row_in_list_table('1: Mince')
-        self.check_for_row_in_list_table('1: Onions')
+        self.check_for_row_in_list_table('2: Onions')
 
         # Z wonders whether the site will remember the list.
         # Then he sees that the site has generated a unique URL

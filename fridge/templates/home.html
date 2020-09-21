@@ -14,10 +14,12 @@
 
         </form>
         <table id="id_list_table">
-            <!-- new_item_text is the variable name for
-             the user input we display in the template -->
-            <tr><td>1: {{ new_item_text }}</td></tr>
-
+            <!-- tag for iterating through items -->
+            {% for item in items %}
+                <!-- new_item_text is the variable name for the user input
+                 we display in the template -->
+                <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
+            {% endfor %}
         </table>
     </body>
 </html>
