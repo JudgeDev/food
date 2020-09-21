@@ -21,7 +21,7 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.get('http://localhost:8000')
 
         # He notices the page title and header mention a fridge
-        self.assertIn('askfridge', self.browser.title)
+        self.assertIn('Fridge', self.browser.title)
         self.fail('Finish the test...')
 
         # He is invited to enter ...
