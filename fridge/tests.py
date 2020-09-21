@@ -56,6 +56,9 @@ and it may be premature to try to remove the duplication
 it causes, but once you get three occurrences,
 it’s time to remove duplication.
 
+Integrated tests
+Technically a test that relies on an external system,
+e.g. a database, is called an integrated test.
 """
 
 from django.urls import resolve
@@ -63,6 +66,7 @@ from django.test import TestCase
 # from django.http import HttpRequest
 
 from fridge.views import home_page
+from fridge.models import Item
 
 
 class HomePageTest(TestCase):
@@ -104,3 +108,36 @@ class HomePageTest(TestCase):
         self.assertIn('A new list item',
                       response.content.decode())
         self.assertTemplateUsed(response, 'home.html')
+
+class ItemModelTest(TestCase):
+    """Testing with Object-Relational Mapper (ORM)
+    ORM is a layer of abstraction for data stored in
+    a database with tables, rows, and columns.
+    It lets us work with databases using familiar
+    object-oriented metaphors which work well with code.
+    Classes map to database tables, attributes map to columns,
+    and an individual instance of the class represents
+    a row of data in the database.
+    """
+
+    def test_saving_and_retrieving_items(self):
+        # create a new record in the database
+        first_item = Item()
+        first_item.text = 'The first (ever) list item'
+        first_item.save()
+
+        second_item = Item()
+        second_item.text = 'Item the second'
+        second_item.save()
+
+        # query the database via the class attribute, .objects
+        saved_items = Item.objects.all()
+        # returns list-like object called a QuerySet
+        self.assertEqual(saved_items.count(), 2)
+
+        first_saved_item = saved_items[0]
+        second_saved_item = saved_items[1]
+        self.assertEqual(first_saved_item.text,
+                         'The first (ever) list item')
+        self.assertEqual(second_saved_item.text,
+                         'Item the second')
