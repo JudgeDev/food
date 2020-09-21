@@ -4,9 +4,19 @@
     </head>
     <body>
         <h1>Your Fridge</h1>
-        <input id="id_new_item"
-        placeholder="Enter an ingredient that is in your fridge"/>
+        <form method="POST">
+            <input name="item_text" id="id_new_item"
+                placeholder="Enter an ingredient that is in your fridge"/>
+            <!--  CSRF template tag - auto-generated token
+            to identify POST requests as having come from
+            the original site -->
+            {% csrf_token %}
+
+        </form>
         <table id="id_list_table">
+            <!-- new_item_text is the variable name for
+             the user input we display in the template -->
+            <tr><td>1: {{ new_item_text }}</td></tr>
 
         </table>
     </body>
