@@ -25,13 +25,21 @@ def new_list(request):
     list_ = List.objects.create()
     # create new item from post request and associate it with the list
     Item.objects.create(text=request.POST['item_text'], list=list_)
-    return redirect('/fridge/the-only-list-in-the-world/')
+    return redirect(f'/fridge/{list_.id}/')
 
 
-def view_list(request):
+def view_list(request, list_id):
     """View for a list"""
-    items = Item.objects.all()
+    list_ = List.objects.get(id=list_id)
     # render page with items from db
-    return render(request, 'list.html', {'items': items})
+    return render(request, 'list.html', {'list': list_})
+
+def add_item(request, list_id):
+    """Add an item to a fridge list"""
+    list_ = List.objects.get(id=list_id)
+    # save new list item
+    Item.objects.create(text=request.POST['item_text'], list=list_)
+    return redirect(f'/fridge/{list_.id}/')
+
 
 

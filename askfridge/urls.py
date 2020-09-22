@@ -24,8 +24,9 @@ urlpatterns = [
     url(r'^$', views.home_page, name='home'),
     # new list url
     url(r'^fridge/new$', views.new_list, name='new_list'),
-    # list url
-    url(r'^fridge/the-only-list-in-the-world/$',
-        views.view_list, name='view_list'),
+    # list url - capture any characters up to following /
+    # pass to the view as an argument
+    url(r'^fridge/(\d+)/$', views.view_list, name='view_list'),
     # add list item url
+    url(r'^fridge/(\d+)/add_item$', views.add_item, name='add_item'),
 ]

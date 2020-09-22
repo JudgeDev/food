@@ -1,9 +1,6 @@
 """Functional tests
 TODO different lists for different people
-    TODO Adjust model so that items are associated with different lists
-    TODO Add unique URLs for each list
-    TODO Add URLs for adding a new item to an existing list via POST
-
+TODO refactor duplicates in urls
 
 Run with: python manage.py test functional_tests
 
@@ -173,7 +170,7 @@ class NewVisitorTest(LiveServerTestCase):
 
         # W gets her own unique URL
         w_list_url = self.browser.current_url
-        self.assertRegex(w_list_url, '/lists/.+')
+        self.assertRegex(w_list_url, '/fridge/.+')
         self.assertNotEqual(w_list_url, z_list_url)
 
         # Again, there is no trace of Z's list

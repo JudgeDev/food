@@ -5,7 +5,7 @@
     <body>
         <h1>Your Fridge</h1>
         <!-- Post back to homepage -->
-        <form method="POST" action="/fridge/new">
+        <form method="POST" action="/fridge/{{ list.id }}/add_item">
             <input name="item_text" id="id_new_item"
                 placeholder="Enter an ingredient that is in your fridge"/>
             <!--  CSRF template tag - auto-generated token
@@ -15,8 +15,8 @@
 
         </form>
         <table id="id_list_table">
-            <!-- tag for iterating through items -->
-            {% for item in items %}
+            <!-- tag for iterating through items use reverse lookup -->
+            {% for item in list.item_set.all %}
                 <!-- new_item_text is the variable name for the user input
                  we display in the template -->
                 <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
