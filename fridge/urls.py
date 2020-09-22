@@ -1,4 +1,4 @@
-"""askfridge URL Configuration
+"""fridge app URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -13,18 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import include, url
-# views and urls from fridge app
-from fridge import views as list_views
-from fridge import urls as list_urls
-
-#from django.contrib import admin
-
+from django.conf.urls import url
 from fridge import views
 
 urlpatterns = [
-    #url(r'^admin/', admin.site.urls),
-    # homepage url
-    url(r'^$', views.home_page, name='home'),
-    # import fridge urls and views
-    url(r'^fridge/', include(list_urls)),]
+    # new list url
+    url(r'^new$', views.new_list, name='new_list'),
+    # list url - capture any characters up to following /
+    # pass to the view as an argument
+    url(r'^(\d+)/$', views.view_list, name='view_list'),
+    # add list item url
+    url(r'^(\d+)/add_item$', views.add_item, name='add_item'),
+]
