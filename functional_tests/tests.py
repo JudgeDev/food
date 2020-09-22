@@ -1,4 +1,11 @@
 """Functional tests
+TODO different lists for different people
+    TODO Adjust model so that items are associated with different lists
+    TODO Add unique URLs for each list
+    TODO Add a URL for creating a new list via POST
+    TODO Add URLs for adding a new item to an existing list via POST
+
+
 Run with: python manage.py test functional_tests
 
 FTs could be in tests for the apps. Better to keep them separate,
@@ -35,16 +42,16 @@ Notes on functional testing:
 Use a Functional Test to Scope Out a Minimum Viable App
 == Acceptance Test == End-to-End Test
 Don’t test constants, and testing HTML as text is a lot like testing a constant
-TODO: clean up after FT runs
 """
 
 import time
-import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import WebDriverException
 
 from django.test import LiveServerTestCase
+
 
 class NewVisitorTest(LiveServerTestCase):
     """LiveServerTestCase will automatically create a test database
@@ -60,23 +67,37 @@ class NewVisitorTest(LiveServerTestCase):
         """Runs after each test"""
         self.browser.quit()
 
-    def check_for_row_in_list_table(self, row_text):
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn(row_text, [row.text for row in rows])
+    def wait_for_row_in_list_table(self, row_text):
+        """Wait for row to be loaded up to max timeout
+         Replaces explicit wait
+         """
+        MAX_WAIT = 10  # max wait is 10 seconds
 
-    def test_can_start_a_list_and_retrieve_it_later(self):
+        start_time = time.time()
+        while True:  # keep going unless row loaded or timeout
+            try:
+                table = self.browser.find_element_by_id('id_list_table')
+                rows = table.find_elements_by_tag_name('tr')
+                self.assertIn(row_text, [row.text for row in rows])
+                return
+            # catch wrong table or table not loaded and wait short time
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
+
+    def test_can_start_a_list_for_one_user(self):
         """Test method run by test runner"""
         # Z has just got home from work and needs to cook something fast before his
         # wife gets back from an all day shopping trip at PEP.
         # He desperately searches the internet and sees an interesting site called
         # "askfridge.com"
-        # get url from LiveServerTestCase
+        ## get url from LiveServerTestCase
         self.browser.get(self.live_server_url)
 
         # He notices the page title and header mention a fridge
         self.assertIn('Fridge', self.browser.title)
-        # list of tags
+        ## list of tags
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('Fridge', header_text)
 
@@ -88,35 +109,77 @@ class NewVisitorTest(LiveServerTestCase):
         )
 
         # He types "Mince" into a text box (Z is still a student at heart)
-        # send_keys is Selenium’s way of typing into input elements
+        ## send_keys is Selenium’s way of typing into input elements
         inputbox.send_keys('Mince')
 
         # When he hits enter, the page updates, and now the page lists
         # "1: Mince" as an item in an ingredient table
-        # Keys class has special keys like Enter
+        ## Keys class has special keys like Enter
         inputbox.send_keys(Keys.ENTER)
-        # after Enter, the page will refresh.
-        # time.sleep is there to make sure the browser has finished loading
-        # before we make any assertions about the new page
-        # This is a simple "explicit wait"
-        # @TODO improve explicit wait for browser to load
-        time.sleep(1)
-        self.check_for_row_in_list_table('1: Mince')
+        ## after Enter, the page will refresh.
+        ## time.sleep is there to make sure the browser has finished loading
+        ## before we make any assertions about the new page
+        ## This is a simple "explicit wait"
+        self.wait_for_row_in_list_table('1: Mince')
 
         # There is still a text box inviting him to add another ingredient.
         # He enters "Onions" (Z doesn't like food to go off)
         inputbox = self.browser.find_element_by_id('id_new_item')
         inputbox.send_keys('Onions')
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         # The page updates again, and now shows both items on the list
-        self.check_for_row_in_list_table('1: Mince')
-        self.check_for_row_in_list_table('2: Onions')
+        self.wait_for_row_in_list_table('1: Mince')
+        self.wait_for_row_in_list_table('2: Onions')
 
         # Z wonders whether the site will remember the list.
         # Then he sees that the site has generated a unique URL
         # for him -- there is some explanatory text to that effect.
-        self.fail('Finish the test!')
+        # self.fail('Finish the test!')
 
         # He visits that URL - his to-do list is still there.
+
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        # Z starts a new list of ingredients
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Mince')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Mince')
+
+        # He notices that his list has a unique URL
+        z_list_url = self.browser.current_url
+        ## checks whether url string matches a regular expression
+        self.assertRegex(z_list_url, '/lists/.+')
+
+        # Now a new user, W, comes along to the site.
+
+        ## We use a new browser session to make sure that no information
+        ## of Z's is coming through from cookies etc
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # W visits the home page.  There is no sign of Z's list
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Mince', page_text)
+        self.assertNotIn('Onions', page_text)
+
+        # W starts a new list by entering a new item. She is vegan and
+        # less interesting than Z...
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Goji berries')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Goji berries')
+
+        # W gets her own unique URL
+        w_list_url = self.browser.current_url
+        self.assertRegex(w_list_url, '/lists/.+')
+        self.assertNotEqual(w_list_url, z_list_url)
+
+        # Again, there is no trace of Z's list
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Mince', page_text)
+        self.assertIn('Goji berries', page_text)
+
+        # Satisfied, they both pour a drink and go to sit on the balcony.

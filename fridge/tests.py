@@ -1,4 +1,5 @@
 """Unit tests for fridge app
+Run with: python manage.py test fridge
 
 The Unit-Test/Code Cycle:
 

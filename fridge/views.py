@@ -9,7 +9,6 @@ def home_page(request):
     and returning an appropriate response.
     For home page that is storing the users' input to the database,
     and redirecting after a POST.
-    TODO different lists for different people
     """
     if request.method == 'POST':
         # .create creates a new Item, without needing to call .save()
