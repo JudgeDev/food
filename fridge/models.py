@@ -11,6 +11,14 @@ from django.db import models
 
 
 # Create your models here.
+class List(models.Model):
+    """Model for fridge list"""
+    #text = models.TextField(default='')
+    pass
+
 class Item(models.Model):
+    """Model for ingredient item"""
     # define text field of db needs default
     text = models.TextField(default='')
+    # link list to item by foreign key
+    list = models.ForeignKey(List, default=None)

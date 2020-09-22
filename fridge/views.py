@@ -1,6 +1,6 @@
 # from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from fridge.models import Item
+from fridge.models import Item, List
 
 
 def home_page(request):
@@ -21,7 +21,10 @@ def home_page(request):
 
 def new_list(request):
     """New list view page"""
-    Item.objects.create(text=request.POST['item_text'])
+    # create new list
+    list_ = List.objects.create()
+    # create new item from post request and associate it with the list
+    Item.objects.create(text=request.POST['item_text'], list=list_)
     return redirect('/fridge/the-only-list-in-the-world/')
 
 

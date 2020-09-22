@@ -63,7 +63,7 @@ is called an integrated test.
 from django.test import TestCase
 # from django.http import HttpRequest
 
-from fridge.models import Item
+from fridge.models import Item, List
 
 
 class HomePageTest(TestCase):
@@ -131,8 +131,11 @@ class ListViewTest(TestCase):
 
     def test_displays_all_items(self):
         # setup test
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
+        # create parent list
+        list_ = List.objects.create()
+        # create items on list
+        Item.objects.create(text='itemey 1', list=list_)
+        Item.objects.create(text='itemey 2', list=list_)
 
         # exercise code under test
         response = self.client.get('/fridge/the-only-list-in-the-world/')
@@ -144,7 +147,7 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'itemey 2')
 
 
-class ItemModelTest(TestCase):
+class ListAndItemModelsTest(TestCase):
     """Testing with Object-Relational Mapper (ORM)
     ORM is a layer of abstraction for data stored in
     a database with tables, rows, and columns.
@@ -156,14 +159,25 @@ class ItemModelTest(TestCase):
     """
 
     def test_saving_and_retrieving_items(self):
-        # create a new record in the database
+        # create a new list in the database
+        list_ = List()
+        list_.save()
+
         first_item = Item()
         first_item.text = 'The first (ever) list item'
+        # assign list to item .list property
+        first_item.list = list_
         first_item.save()
 
         second_item = Item()
         second_item.text = 'Item the second'
+        # assign list to item .list property
+        second_item.list = list_
         second_item.save()
+
+        # check list is properly saved
+        saved_list = List.objects.first()
+        self.assertEqual(saved_list, list_)
 
         # query the database via the class attribute, .objects
         saved_items = Item.objects.all()
@@ -174,5 +188,9 @@ class ItemModelTest(TestCase):
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text,
                          'The first (ever) list item')
+        # check item is assigned to list
+        self.assertEqual(first_saved_item.list, list_)
         self.assertEqual(second_saved_item.text,
                          'Item the second')
+        # check item is assigned to list
+        self.assertEqual(second_saved_item.list, list_)
