@@ -3,7 +3,7 @@
         <title>Ask Fridge</title>
     </head>
     <body>
-        <h1>Your Fridge</h1>
+        <h1>Ask your fridge...</h1>
         <form method="POST">
             <input name="item_text" id="id_new_item"
                 placeholder="Enter an ingredient that is in your fridge"/>
@@ -13,13 +13,5 @@
             {% csrf_token %}
 
         </form>
-        <table id="id_list_table">
-            <!-- tag for iterating through items -->
-            {% for item in items %}
-                <!-- new_item_text is the variable name for the user input
-                 we display in the template -->
-                <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
-            {% endfor %}
-        </table>
     </body>
 </html>

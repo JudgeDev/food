@@ -99,7 +99,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertIn('Fridge', self.browser.title)
         ## list of tags
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('Fridge', header_text)
+        self.assertIn('fridge', header_text)
 
         # He is invited to enter an ingredient that is in his fridge
         inputbox = self.browser.find_element_by_id('id_new_item')

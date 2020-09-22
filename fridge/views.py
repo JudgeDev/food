@@ -13,7 +13,7 @@ def home_page(request):
     if request.method == 'POST':
         # .create creates a new Item, without needing to call .save()
         Item.objects.create(text=request.POST['item_text'])
-        return redirect('/')
+        return redirect('/lists/the-only-list-in-the-world/')
 
     """Render takes the request as its first parameter and the name of
     the template to render.
@@ -22,5 +22,14 @@ def home_page(request):
     Then it builds an HttpResponse, based on the content of the template.
     """
     items = Item.objects.all()
+    # render page
+    return render(request, 'home.html')
+
+
+def view_list(request):
+    """View for a list"""
+    items = Item.objects.all()
     # render page with items from db
-    return render(request, 'home.html', {'items': items})
+    return render(request, 'list.html', {'items': items})
+
+
