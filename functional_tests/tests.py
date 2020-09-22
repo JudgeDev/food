@@ -150,7 +150,7 @@ class NewVisitorTest(LiveServerTestCase):
         # He notices that his list has a unique URL
         z_list_url = self.browser.current_url
         ## checks whether url string matches a regular expression
-        self.assertRegex(z_list_url, '/lists/.+')
+        self.assertRegex(z_list_url, '/fridge/.+')
 
         # Now a new user, W, comes along to the site.
 

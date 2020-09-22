@@ -93,13 +93,19 @@ class HomePageTest(TestCase):
         self.assertIn('<title>Ask Fridge</title>', html)
         self.assertTemplateUsed(response, 'home.html')
 
+    def test_only_saves_items_when_necessary(self):
+        self.client.get('/')
+        self.assertEqual(Item.objects.count(), 0)
+
+
+class NewListTest(TestCase):
     def test_can_save_a_POST_request(self):
         """To do a POST, call self.client.post.
         It takes a data argument which contains the form data we want to send.
         Then check that the text from our POST request ends up in
         the rendered HTML.
         """
-        response = self.client.post('/',
+        response = self.client.post('/fridge/new',
                                     data={'item_text': 'A new list item'})
         # = objects.all().count()
         self.assertEqual(Item.objects.count(), 1)
@@ -109,22 +115,18 @@ class HomePageTest(TestCase):
         self.assertEqual(new_item.text, 'A new list item')
 
     def test_redirects_after_post(self):
-        response = self.client.post('/',
+        response = self.client.post('/fridge/new',
                                     data={'item_text': 'A new list item'})
         # check for redirect after POST
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'],
-                         '/lists/the-only-list-in-the-world/')
-
-    def test_only_saves_items_when_necessary(self):
-        self.client.get('/')
-        self.assertEqual(Item.objects.count(), 0)
+        # assertRedirects replaces assertEqual of 302 code
+        self.assertRedirects(response,
+                             '/fridge/the-only-list-in-the-world/')
 
 
 class ListViewTest(TestCase):
 
     def test_uses_list_template(self):
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        response = self.client.get('/fridge/the-only-list-in-the-world/')
         self.assertTemplateUsed(response, 'list.html')
 
     def test_displays_all_items(self):
@@ -133,7 +135,7 @@ class ListViewTest(TestCase):
         Item.objects.create(text='itemey 2')
 
         # exercise code under test
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        response = self.client.get('/fridge/the-only-list-in-the-world/')
 
         # assert results
         # assertContains(r, 'text') replaces

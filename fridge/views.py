@@ -9,21 +9,20 @@ def home_page(request):
     and returning an appropriate response.
     For home page that is storing the users' input to the database,
     and redirecting after a POST.
-    """
-    if request.method == 'POST':
-        # .create creates a new Item, without needing to call .save()
-        Item.objects.create(text=request.POST['item_text'])
-        return redirect('/lists/the-only-list-in-the-world/')
 
-    """Render takes the request as its first parameter and the name of
+    Render takes the request as its first parameter and the name of
     the template to render.
     Django will automatically search folders called templates inside any of
     your apps' directories.
     Then it builds an HttpResponse, based on the content of the template.
     """
-    items = Item.objects.all()
-    # render page
     return render(request, 'home.html')
+
+
+def new_list(request):
+    """New list view page"""
+    Item.objects.create(text=request.POST['item_text'])
+    return redirect('/fridge/the-only-list-in-the-world/')
 
 
 def view_list(request):
