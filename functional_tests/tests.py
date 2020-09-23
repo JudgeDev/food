@@ -38,9 +38,15 @@ Notes on functional testing:
 Use a Functional Test to Scope Out a Minimum Viable App
 == Acceptance Test == End-to-End Test
 Don’t test constants, and testing HTML as text is a lot like testing a constant
+Don't write tests for design and layout per se. It’s too much like
+testing a constant, and the tests are often brittle.
+Test implementation though: CSS and static files. Use minimal "smoke test".
+Similarly, test client-side JavaScript code
+Write minimal tests that design and layout is working, without testing
+what it actually is.
 """
 
-import time
+import time, os
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -58,6 +64,11 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def setUp(self) -> None:
         """Runs before each test"""
         self.browser = webdriver.Firefox()
+        staging_server = os.environ.get('STAGING_SERVER')
+        if staging_server:
+            # replace live server url with address of real server
+            self.live_server_url = 'http://' + staging_server
+
 
     def tearDown(self) -> None:
         """Runs after each test"""
@@ -73,7 +84,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
-            delta=100
+            delta=300
         )
         # She starts a new list and sees the input is nicely
         # centered there too
@@ -84,7 +95,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertAlmostEqual(
             inputbox.location['x'] + inputbox.size['width'] / 2,
             512,
-            delta=100
+            delta=300
         )
 
     def wait_for_row_in_list_table(self, row_text):
