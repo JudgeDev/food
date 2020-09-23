@@ -63,6 +63,30 @@ class NewVisitorTest(LiveServerTestCase):
         """Runs after each test"""
         self.browser.quit()
 
+    def test_layout_and_styling(self):
+        # Z goes to the home page
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # He notices the input box is nicely centered
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=100
+        )
+        # She starts a new list and sees the input is nicely
+        # centered there too
+        inputbox.send_keys('testing')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: testing')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=100
+        )
+
     def wait_for_row_in_list_table(self, row_text):
         """Wait for row to be loaded up to max timeout
          Replaces explicit wait
@@ -101,7 +125,7 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
-            'Enter an ingredient that is in your fridge'
+            'Enter an ingredient in your fridge'
         )
 
         # He types "Mince" into a text box (Z is still a student at heart)

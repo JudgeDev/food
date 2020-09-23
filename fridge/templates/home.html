@@ -6,12 +6,11 @@
         <h1>Ask your fridge...</h1>
         <form method="POST" action="/fridge/new">
             <input name="item_text" id="id_new_item"
-                placeholder="Enter an ingredient that is in your fridge"/>
+                placeholder="Enter an ingredient in your fridge"/>
             <!--  CSRF template tag - auto-generated token
             to identify POST requests as having come from
             the original site -->
             {% csrf_token %}
-
         </form>
     </body>
 </html>
