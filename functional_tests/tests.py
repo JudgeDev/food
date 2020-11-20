@@ -46,7 +46,8 @@ Write minimal tests that design and layout is working, without testing
 what it actually is.
 """
 
-import time, os
+import time
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -54,6 +55,7 @@ from selenium.common.exceptions import WebDriverException
 
 # from django.test import LiveServerTestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 
 class NewVisitorTest(StaticLiveServerTestCase):
     """LiveServerTestCase will automatically create a test database
@@ -68,7 +70,6 @@ class NewVisitorTest(StaticLiveServerTestCase):
         if staging_server:
             # replace live server url with address of real server
             self.live_server_url = 'http://' + staging_server
-
 
     def tearDown(self) -> None:
         """Runs after each test"""

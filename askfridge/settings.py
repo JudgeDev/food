@@ -25,7 +25,7 @@ SECRET_KEY = 'wsf=_%_*qo=wjp&5bw6ovc#&ko0a_j419w8+fs-1_7v-5tw!99'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # temp allow everyone
 
 
 # Application definition
